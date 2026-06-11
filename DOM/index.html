@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .task-container {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        .trackbar-container {
+            margin: 20px 0;
+        }
+        input[type="range"] {
+            width: 300px;
+        }
+        .gallery {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .gallery img {
+            width: 250px;
+            height: 180px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .accordion-item {
+            width: 400px;
+            border: 1px solid #34495e;
+            margin-bottom: 5px;
+        }
+        .accordion-header {
+            background-color: #34495e;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .accordion-content {
+            padding: 10px;
+            background-color: #ecf0f1;
+            display: none;
+        }
+        .news-list {
+            max-width: 500px;
+        }
+        .news-item {
+            background: #fff8dc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 5px solid #f39c12;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #aaa;
+            padding: 10px;
+            text-align: center;
+            width: 40px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="task-container">
+        <h2>1</h2>
+        <div class="trackbar-container">
+            <input type="range" id="myRange" min="0" max="100" value="50">
+            <span id="rangeValue">50</span>%
+        </div>
+    </div>
+
+    <div class="task-container">
+        <h2>2</h2>
+        <div class="gallery">
+            <button id="prevBtn">Назад</button>
+            <img id="galleryImg" src="https://via.placeholder.com/250x180?text=Image+1" alt="Галерея">
+            <button id="nextBtn">Вперед</button>
+        </div>
+    </div>
+
+    <div class="task-container">
+        <h2>3</h2>
+        <div class="accordion">
+            <div class="accordion-item">
+                <div class="accordion-header">What is Lorem Ipsum?</div>
+                <div class="accordion-content">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Why do we use it?</div>
+                <div class="accordion-content">It is a long established fact that a reader will be distracted by the readable content.</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Where does it come from?</div>
+                <div class="accordion-content">Contrary to popular belief, Lorem Ipsum is not simply random text.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="task-container">
+        <h2>4</h2>
+        <div id="newsContainer" class="news-list">
+            <div class="news-item"><h4>Новина 1</h4><p>Текст першої базової новини...</p></div>
+            <div class="news-item"><h4>Новина 2</h4><p>Текст другої базової новини...</p></div>
+        </div>
+        <button id="loadNewsBtn" style="margin-top: 10px;">Завантажити ще новини</button>
+    </div>
+
+    <div class="task-container">
+        <h2>5</h2>
+        <label>Month: <input type="number" id="calMonth" min="1" max="12" value="8" style="width: 50px;"></label>
+        <label>Year: <input type="number" id="calYear" min="1900" max="2100" value="2018" style="width: 70px;"></label>
+        <button id="genCalBtn">Generate</button>
+        
+        <h3 id="calendarTitle"></h3>
+        <div id="calendarTableContainer"></div>
+    </div>
+
+    <script>
+        const rangeInput = document.getElementById('myRange');
+        const rangeValue = document.getElementById('rangeValue');
+        
+        rangeInput.addEventListener('input', () => {
+            rangeValue.textContent = rangeInput.value;
+        });
+
+        const images = [
+            "https://via.placeholder.com/250x180?text=Image+1",
+            "https://via.placeholder.com/250x180?text=Image+2",
+            "https://via.placeholder.com/250x180?text=Image+3",
+            "https://via.placeholder.com/250x180?text=Image+4"
+        ];
+        let currentImgIndex = 0;
+        const imgElement = document.getElementById('galleryImg');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateGallery() {
+            imgElement.src = images[currentImgIndex];
+            prevBtn.disabled = (currentImgIndex === 0);
+            nextBtn.disabled = (currentImgIndex === images.length - 1);
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentImgIndex > 0) {
+                currentImgIndex--;
+                updateGallery();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentImgIndex < images.length - 1) {
+                currentImgIndex++;
+                updateGallery();
+            }
+        });
+        
+        updateGallery();
+
+        const headers = document.querySelectorAll('.accordion-header');
+
+        headers.forEach(header => {
+            header.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const isOpen = content.style.display === 'block';
+
+                document.querySelectorAll('.accordion-content').forEach(item => {
+                    item.style.display = 'none';
+                });
+
+                if (!isOpen) {
+                    content.style.display = 'block';
+                }
+            });
+        });
+
+        const extraNews = [
+            { title: "Новина 3", text: "Текст третьої новини, яку ми додали з масиву." },
+            { title: "Новина 4", text: "Текст четвертої новини. Скрольте або тисніть кнопку далі." },
+            { title: "Новина 5", text: "П'ята новина. Програмування на JS — це весело!" },
+            { title: "Новина 6", text: "Шоста новина, фінальна в цьому списку." }
+        ];
+        
+        const newsContainer = document.getElementById('newsContainer');
+        const loadNewsBtn = document.getElementById('loadNewsBtn');
+
+        function loadMoreNews() {
+            if (extraNews.length > 0) {
+                const news = extraNews.shift();
+                const newsDiv = document.createElement('div');
+                newsDiv.className = 'news-item';
+                newsDiv.innerHTML = `<h4>${news.title}</h4><p>${news.text}</p>`;
+                newsContainer.appendChild(newsDiv);
+            } else {
+                loadNewsBtn.textContent = "Новин більше немає";
+                loadNewsBtn.disabled = true;
+            }
+        }
+
+        loadNewsBtn.addEventListener('click', loadMoreNews);
+
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 5) {
+                loadMoreNews();
+            }
+        });
+
+        const monthsNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        document.getElementById('genCalBtn').addEventListener('click', () => {
+            const month = parseInt(document.getElementById('calMonth').value) - 1;
+            const year = parseInt(document.getElementById('calYear').value);
+            
+            if (isNaN(month) || month < 0 || month > 11 || isNaN(year)) {
+                alert("Введіть коректні дані!");
+                return;
+            }
+
+            document.getElementById('calendarTitle').textContent = `${monthsNames[month]}, ${year}`;
+
+            let firstDay = new Date(year, month, 1).getDay();
+            if (firstDay === 0) firstDay = 7; 
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let tableHTML = '<table><tr><th>MON</th><th>TUE</th><th>WED</th><th>THU</th><th>FRI</th><th>SAT</th><th>SUN</th></tr><tr>';
+
+            for (let i = 1; i < firstDay; i++) {
+                tableHTML += '<td></td>';
+            }
+
+            let currentDay = 1;
+            let dayOfWeek = firstDay;
+
+            while (currentDay <= daysInMonth) {
+                tableHTML += `<td>${currentDay}</td>`;
+                
+                if (dayOfWeek === 7 && currentDay < daysInMonth) {
+                    tableHTML += '</tr><tr>';
+                    dayOfWeek = 0;
+                }
+                currentDay++;
+                dayOfWeek++;
+            }
+
+            if (dayOfWeek <= 7) {
+                for (let i = dayOfWeek; i <= 7; i++) {
+                    tableHTML += '<td></td>';
+                }
+            }
+
+            tableHTML += '</tr></table>';
+            document.getElementById('calendarTableContainer').innerHTML = tableHTML;
+        });
+    </script>
+</body>
+</html>
