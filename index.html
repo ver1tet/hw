@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Чернетка ДЗ</title>
+</head>
+<body>
+
+    <h1>Лабораторна робота: Спадкування</h1>
+
+    <div>
+        <h3>Завдання 1</h3>
+        <div id="t1"></div>
+    </div>
+
+    <hr>
+
+    <div>
+        <h3>Завдання 2</h3>
+        <div id="t2" style="white-space: pre-wrap; font-family: monospace;"></div>
+    </div>
+
+    <hr>
+
+    <div>
+        <h3>Завдання 3 (Проста таблиця)</h3>
+        <div id="t3"></div>
+    </div>
+
+    <hr>
+
+    <div>
+        <h3>Завдання 4 (Таблиця зі стилями)</h3>
+        <div id="t4"></div>
+    </div>
+
+
+    <script>
+        // 1
+        class SimpleMarker {
+            constructor(color, inkPercentage) {
+                this.color = color;
+                this.inkPercentage = inkPercentage;
+            }
+
+            print(text) {
+                let printedText = "";
+                for (let char of text) {
+                    if (this.inkPercentage <= 0) break;
+                    
+                    printedText += char;
+                    if (char !== " ") {
+                        this.inkPercentage -= 0.5;
+                    }
+                }
+                return `<span style="color: ${this.color};">${printedText}</span> (Залишок чорнил: ${this.inkPercentage}%)`;
+            }
+        }
+
+        class RefillableMarker extends SimpleMarker {
+            refill(amount) {
+                this.inkPercentage += amount;
+                if (this.inkPercentage > 100) this.inkPercentage = 100;
+            }
+        }
+
+
+        const t1 = document.getElementById('t1');
+        let m1 = new SimpleMarker("blue", 6);
+        t1.innerHTML += "<p>Простий маркер: " + m1.print("Тут якийсь довгий текст для перевірки") + "</p>";
+
+        let m2 = new RefillableMarker("red", 2);
+        t1.innerHTML += "<p>Маркер до заправки: " + m2.print("Привіт") + "</p>";
+        m2.refill(30);
+        t1.innerHTML += "<p>Після заправки: " + m2.print("Тепер пишемо далі без проблем") + "</p>";
+
+
+        // 2
+        class ExtendedDate extends Date {
+            getFormattedMonthAndDay() {
+                const months = [
+                    "січня", "лютого", "березня", "квітня", "травня", "червня",
+                    "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"
+                ];
+                return `${this.getDate()} ${months[this.getMonth()]}`;
+            }
+
+            isFutureOrPresent() {
+                const now = new Date();
+                now.setHours(0,0,0,0);
+                const compare = new Date(this.getTime());
+                compare.setHours(0,0,0,0);
+                return compare >= now;
+            }
+
+            isLeapYear() {
+                const year = this.getFullYear();
+                return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+            }
+
+            getNextDate() {
+                let next = new ExtendedDate(this.getTime());
+                next.setDate(this.getDate() + 1);
+                return next;
+            }
+        }
+
+        const t2 = document.getElementById('t2');
+        let date = new ExtendedDate(2026, 5, 12);
+        
+        let res = `Дата: ${date.toLocaleDateString()}\n`;
+        res += `Текстом: ${date.getFormattedMonthAndDay()}\n`;
+        res += `Майбутня/поточна?: ${date.isFutureOrPresent()}\n`;
+        res += `Високосний рік?: ${date.isLeapYear()}\n`;
+        res += `Наступний день: ${date.getNextDate().toLocaleDateString()}`;
+        t2.textContent = res;
+
+
+        //3
+        class Employee {
+            constructor(name, pos, dep, salary) {
+                this.name = name;
+                this.pos = pos;
+                this.dep = dep;
+                this.salary = salary;
+            }
+        }
+
+        const emps = [
+            new Employee("Іванов І.", "Менеджер", "Кредити", 20000),
+            new Employee("Петрова О.", "Касир", "Каса", 15000),
+            new Employee("Сидоров О.", "Адмін", "IT", 40000)
+        ];
+
+        class EmpTable {
+            constructor(arr) {
+                this.arr = arr;
+            }
+
+            getHtml() {
+                let html = "<table border='1'>";
+                html += "<tr><th>ПІБ</th><th>Посада</th><th>Відділ</th><th>Зарплата</th></tr>";
+                for (let e of this.arr) {
+                    html += `<tr><td>${e.name}</td><td>${e.pos}</td><td>${e.dep}</td><td>${e.salary}</td></tr>`;
+                }
+                html += "</table>";
+                return html;
+            }
+        }
+
+        document.getElementById('t3').innerHTML = new EmpTable(emps).getHtml();
+
+
+        //4
+        class StyledEmpTable extends EmpTable {
+            getStyles() {
+                return `<style>
+                    .my-table { border: 2px solid black; border-collapse: collapse; width: 50%; }
+                    .my-table th { background: #ccc; padding: 5px; }
+                    .my-table td { padding: 5px; text-align: center; }
+                </style>`;
+            }
+
+            getHtml() {
+                let tableHtml = super.getHtml();
+                tableHtml = tableHtml.replace("<table border='1'>", "<table class='my-table'>");
+                return this.getStyles() + tableHtml;
+            }
+        }
+
+        document.getElementById('t4').innerHTML = new StyledEmpTable(emps).getHtml();
+
+    </script>
+</body>
+</html>
